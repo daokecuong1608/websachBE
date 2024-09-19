@@ -38,6 +38,12 @@ public class NguoiDung {
     private String diaChiMuaHang;
     @Column(name = "dia_chi_giao_hang")
     private String diaChiGiaoHang;
+    @Column(name = "ma_kich_hoat")
+    private String maKichHoat;
+    @Column(name = "da_kich_hoat")
+    private boolean daKichHoat;
+
+
 
     @OneToMany(mappedBy = "nguoiDung", fetch = FetchType.LAZY, cascade = {
             CascadeType.PERSIST, CascadeType.MERGE,
