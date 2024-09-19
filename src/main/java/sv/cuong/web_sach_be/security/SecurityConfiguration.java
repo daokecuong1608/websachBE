@@ -9,19 +9,24 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
 import sv.cuong.web_sach_be.service.UserService;
+
+import java.util.Arrays;
 
 @Configuration
 public class SecurityConfiguration {
 
+
+
     @Bean
-    public BCryptPasswordEncoder passwordEncoder(){
-        return  new BCryptPasswordEncoder();
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
-@Autowired
-    public DaoAuthenticationProvider authenticationProvider(UserService userService){
+    @Autowired
+    public DaoAuthenticationProvider authenticationProvider(UserService userService) {
         //SD xác thực quyền hạn của đối tương
         DaoAuthenticationProvider dap = new DaoAuthenticationProvider();
         dap.setUserDetailsService(userService);
@@ -33,16 +38,25 @@ public class SecurityConfiguration {
     @Bean//cấu hình truy cập
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(
-          config -> config
-                  .requestMatchers(HttpMethod.GET , "/sach").permitAll()
-                  .requestMatchers(HttpMethod.GET , "/nguoi-dung").hasAnyAuthority("ADMIN")
-                  .requestMatchers(HttpMethod.POST , "/tai-khoan/dang-ky").permitAll()
+                config -> config
+                        .requestMatchers(HttpMethod.GET, Endpoints.PUBLIC_GET_ENDPOINT).permitAll()
+                        .requestMatchers(HttpMethod.POST, Endpoints.PUBLIC_POST_ENDPOINT).permitAll()
+                        .requestMatchers(HttpMethod.GET, Endpoints.ADMIN_GET_ENDPOINT).hasAnyAuthority("ADMIN")
 
         );
+        http.cors(cors -> {
+            cors.configurationSource(request -> {
+                CorsConfiguration configuration = new CorsConfiguration();
+                configuration.addAllowedOrigin(Endpoints.front_end_host);
+                configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT","DELETE"));
+                configuration.addAllowedHeader("*");
+                return  configuration;
+            });
+        });
 
         http.httpBasic(Customizer.withDefaults());
         http.csrf(csrf -> csrf.disable());
-        return  http.build();
+        return http.build();
 
     }
 }
