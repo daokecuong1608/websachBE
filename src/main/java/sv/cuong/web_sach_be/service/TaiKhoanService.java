@@ -3,6 +3,7 @@ package sv.cuong.web_sach_be.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import sv.cuong.web_sach_be.dao.NguoiDungRepository;
 import sv.cuong.web_sach_be.entity.NguoiDung;
@@ -14,7 +15,8 @@ public class TaiKhoanService {
     @Autowired
 private NguoiDungRepository nguoiDungRepository;
 
-
+@Autowired
+public BCryptPasswordEncoder passwordEncoder;
 
     public ResponseEntity<?>dangKyNguoiDung(NguoiDung nguoiDung){
         //kiểm tra tên đăng nhập đã tồn tại chưa
@@ -26,6 +28,10 @@ private NguoiDungRepository nguoiDungRepository;
             return  ResponseEntity.badRequest().body(new ThongBao("Email đã tồn tại!"));
         }
 
+        //ma hoa mat khau
+        String encrypassword = passwordEncoder.encode(nguoiDung.getMatKhau());
+        nguoiDung.setMatKhau(encrypassword);
+        
         //thêm người dùng vào csdl
         NguoiDung nguoiDung_dangKy = nguoiDungRepository.save(nguoiDung);
         return ResponseEntity.ok(new ThongBao("Đăng ký thành công!"));
