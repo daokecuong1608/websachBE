@@ -22,4 +22,8 @@ public class Endpoints {
             "/nguoi-dung",
             "/nguoi-dung/**",
     };
+    public static String[] ADMIN_POSt_ENDPOINT = {
+            "/sach",
+            "/sach/**",
+    };
 }

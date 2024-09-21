@@ -23,7 +23,7 @@ public class JwtService {
     public String generateToken(String tenDangNhap) {
         Map<String, Object> claims = new HashMap<>();
          claims.put("isAdmin" , true);
-        claims.put("x" , true);
+
         return createToken(claims, tenDangNhap);
     }
 
@@ -34,7 +34,7 @@ public class JwtService {
                 .setSubject(tenDangNhap)
                 .setIssuedAt(new Date(System.currentTimeMillis()))//lấy thời gian phát hành JWT
                 .setExpiration(new Date(System.currentTimeMillis() + 30 * 60 * 1000)) //JWt tự động hết hạn
-                .signWith(SignatureAlgorithm.HS512, getSigneKey())
+                .signWith(SignatureAlgorithm.HS256, getSigneKey())
                 .compact();
     }
 
@@ -46,7 +46,7 @@ public class JwtService {
 
     // Trich xuat thong tin
     private Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(getSigneKey()).parseClaimsJwt(token).getBody();
+        return Jwts.parser().setSigningKey(getSigneKey()).parseClaimsJws(token).getBody();
     }
 
     //trich xuất thông tin cho 1 claim
