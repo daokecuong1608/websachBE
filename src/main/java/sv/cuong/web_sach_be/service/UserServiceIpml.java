@@ -41,8 +41,7 @@ public class UserServiceIpml implements UserService{
        if(nguoiDung == null) {
          throw  new UsernameNotFoundException("Tài khoản không tồn tại");
        }
-       User user = new User(nguoiDung.getTenDangNhap() , nguoiDung.getMatKhau(),rolesToAuthorities(nguoiDung.getDanhSachQuyen()));
-        return user;
+        return new User(nguoiDung.getTenDangNhap() , nguoiDung.getMatKhau(),rolesToAuthorities(nguoiDung.getDanhSachQuyen()));
     }
 
     private Collection<? extends GrantedAuthority> rolesToAuthorities(Collection<Quyen> quyens){

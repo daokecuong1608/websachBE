@@ -59,6 +59,27 @@ public class TaiKhoanService {
     private void guiEmailKichHoat(String email, String maKichHoat) {
         String subject = "Kích hoạt tài khoản của bạn tại trang web của chúng tôi";
         String text = "Vui lòng sử dụng mã sau để kích hoạt tài khoản <" + email + ">:<html><body><br/><h1>" + maKichHoat + "</h1></body></html></html>";
+        text += "</br> click vào đường link để kích hoạt tài khoản:";
+        String url = "http://localhost:3000/kichHoat/" + email + "/" + maKichHoat;
+        text += "</br> <a href=" + url + ">" + url + "</a>";
+
         emailService.sendMessage("daokecuong1608@gmail.com", email, subject, text);
+    }
+
+    public ResponseEntity<?> kichHoatTaiKhoan(String email, String maKichHoat) {
+        NguoiDung nguoiDung = nguoiDungRepository.findByEmail(email);
+        if (nguoiDung == null) {
+            return ResponseEntity.badRequest().body(new ThongBao("Người dùng không tồn tại "));
+        }
+        if (nguoiDung.isDaKichHoat()) {
+            return ResponseEntity.badRequest().body(new ThongBao("Tài khoản đã được kích hoạt "));
+        }
+        if (maKichHoat.equals(nguoiDung.getMaKichHoat())) {
+            nguoiDung.setDaKichHoat(true);
+            nguoiDungRepository.save(nguoiDung);
+            return ResponseEntity.ok("Kích hoạt tài khoản thành công");
+        } else {
+            return ResponseEntity.badRequest().body(new ThongBao("Mã kích hoạt không đúng"));
+        }
     }
 }
